@@ -26,6 +26,7 @@ async def clearCounter24h():  # Função em Loop pra ver se chegou meia noite.
             f = open("main/counter.txt")
             f.write("0")
             f.close
+            print('Counter resetado com sucesso!')
         await asyncio.sleep(1)  # O programa roda a cada 1 segundo.
 
 client.loop.create_task(clearCounter24h())  # Loop.
@@ -36,7 +37,6 @@ async def count(ctx):  # Comando pra ver quantas vezes ele trocou de pfp.
     f = open("main/counter.txt", "r")
     await ctx.send(f'Total de vezes que o Ekin trocou de PFP hoje: {f.read()} vezes.')
     f.close()
-    print('Counter resetado com sucesso!')
 
 
 @bot.event
