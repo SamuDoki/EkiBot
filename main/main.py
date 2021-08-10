@@ -2,40 +2,79 @@ import discord
 from discord.ext import commands
 import validators
 import datetime
+import asyncio
+import pytz
 
-intents = discord.Intents.default() #Para o negocio de pfp funcionar
-intents.members = True #Para o negocio de pfp funcionar
+client = discord.Client()
+tz = pytz.timezone('America/Sao_Paulo')
 
-bot = commands.Bot(command_prefix = 'e.', case_insensitive = True, intents= intents) #Ver prefixo e caso escrevam o comando em maiusculo, o bot le msm assim
+intents = discord.Intents.default()  # Para o negocio de pfp funcionar
+intents.members = True  # Para o negocio de pfp funcionar
+
+# Ver prefixo e caso escrevam o comando em maiusculo, o bot le msm assim
+bot = commands.Bot(command_prefix='e.', case_insensitive=True, intents=intents)
+
 
 @bot.event
 async def on_ready():
-  print('Estou ligado') #Vai mandar msg no terminal quando ligado
+    print('Estou ligado.')  # Vai mandar msg no terminal quando ligado
 
-lista_contador = [] #Lista que vai contar quantas vezes o eki mudou de pfp 
+
+async def clearCounter24h():  # Função em Loop pra ver se chegou meia noite.
+    while True:
+        if datetime.datetime.now(pytz.timezone('America/Sao_Paulo')).strftime("%H:%M:%S") == '00:00:00':
+            f = open("main/counter.txt")
+            f.write("0")
+            f.close
+        await asyncio.sleep(1)  # O programa roda a cada 1 segundo.
+
+client.loop.create_task(clearCounter24h())  # Loop.
+
+
+@bot.command()
+async def count(ctx):  # Comando pra ver quantas vezes ele trocou de pfp.
+    f = open("main/counter.txt", "r")
+    await ctx.send(f'Total de vezes que o Ekin trocou de PFP hoje: {f.read()} vezes.')
+    f.close()
+    print('Counter resetado com sucesso!')
+
 
 @bot.event
 async def on_user_update(before, after):
-  channel = bot.get_channel(739216493706739717) #Pegar id do canal
-  if before.id == 805145592606228491 and before.avatar != after.avatar: #Pegar o id do usuário (no caso é o id da minha alt ai, vou esperar o eki voltar para atualizar) 
-    counter = 0 #Contar as pfps
-    while True:
-      counter += 1
-      lista.append(counter) 
-      usuario = bot.get_user(805145592606228491) #Pegar o id do usuario e a tag dele (tipo Samudoki#1024 / ID)
-      embedVar = discord.Embed(title="O Eki mudou de pfp dnv", description=f"[Antiga pfp]({before.avatar_url})", color=0x00ff00) #Titulo da embed, hyperlink da antiga pfp e a descrição
+    channel = bot.get_channel(821037680493723668)  # Pegar id do canal
 
-      embedVar.set_footer(text=f'Horário: {datetime.datetime.now().strftime("%H:%M:%S")}') #Rodapé da embed com a hora que mudou
-      embedVar.set_thumbnail(url = usuario.avatar_url) #Foto da pfp atual
-      embedVar.add_field(name = 'Quantas vezes já aconteceu?', value=f'Já é a {sum(lista)}° vez no dia que isso acontece', inline=True) #Contador
-    
-      await channel.send(embed=embedVar) #Mndaar embed
-      break
-    
-"""@bot.event
-async def on_member_update(before, after):
-    channel = bot.get_channel(739216493706739717) 
-    if before.id == 805145592606228491 and before.name != after.name:
-        await channel.send(f'nick mudado')""" #Ainda testando esse comando, se funcionar eu adiciono
+    # Pegar o id do usuário (no caso é o id da minha alt ai, vou esperar o eki voltar para atualizar)
+    if before.id == 424357764794548238 and before.avatar != after.avatar:
+        f = open("main/counter.txt")  # Abre o arquivo "main/counter.txt".
+        counterLeitura = f.read()  # Lê o arquivo.
+        counterAtual = int(counterLeitura)  # Passa para a variável.
+        f.close()  # Fecha o arquivo
+
+        while True:
+
+            counterSoma = counterAtual + 1
+            # Passa o arquivo para string para escrever o arquivo.
+            counter = str(counterSoma)
+            f = open("main/counter.txt", "w")  # Abre o arquivo para escrever.
+            f.write(counter)
+            f.close()
+            print('Counter atualizado com sucesso!')
+
+            # Pegar o id do usuario e a tag dele (tipo Samudoki#1024 / ID)
+            usuario = bot.get_user(424357764794548238)
+            # Titulo da embed, hyperlink da antiga pfp e a descrição
+            embedVar = discord.Embed(title="O Eki mudou de pfp dnv",
+                                     description=f"[Antiga pfp]({before.avatar_url})", color=0x00ff00)
+
+            # Rodapé da embed com a hora que mudou
+            embedVar.set_footer(
+                text=f'Horário: {datetime.datetime.now().strftime("%H:%M:%S")}')
+            embedVar.set_thumbnail(url=usuario.avatar_url)  # Foto da pfp atual
+            embedVar.add_field(name='Quantas vezes já aconteceu?',
+                               value=f'Já é a {counter}° vez no dia que isso acontece', inline=True)  # Contador
+
+            await channel.send(embed=embedVar)  # Mndaar embed
+
+            break
 
 bot.run('TOKEN')
