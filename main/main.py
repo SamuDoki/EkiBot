@@ -77,4 +77,4 @@ async def on_user_update(before, after):
 
             break
 
-bot.run('TOKEN')
+bot.run(token)
