@@ -41,10 +41,10 @@ async def count(ctx):  # Comando pra ver quantas vezes ele trocou de pfp.
 
 @bot.event
 async def on_user_update(before, after):
-    channel = bot.get_channel(821037680493723668)  # Pegar id do canal
+    channel = bot.get_channel(<ID DO CANAL>)  # Pegar id do canal
 
     # Pegar o id do usuário (no caso é o id da minha alt ai, vou esperar o eki voltar para atualizar)
-    if before.id == 424357764794548238 and before.avatar != after.avatar:
+    if before.id == <ID DO USUÁRIO> and before.avatar != after.avatar:
         f = open("main/counter.txt")  # Abre o arquivo "main/counter.txt".
         counterLeitura = f.read()  # Lê o arquivo.
         counterAtual = int(counterLeitura)  # Passa para a variável.
@@ -61,9 +61,9 @@ async def on_user_update(before, after):
             print('Counter atualizado com sucesso!')
 
             # Pegar o id do usuario e a tag dele (tipo Samudoki#1024 / ID)
-            usuario = bot.get_user(424357764794548238)
+            usuario = bot.get_user(<ID DO USUÁRIO>)
             # Titulo da embed, hyperlink da antiga pfp e a descrição
-            embedVar = discord.Embed(title="O Eki mudou de pfp dnv",
+            embedVar = discord.Embed(title="O <NOME DO USUÁRIO> mudou de pfp dnv",
                                      description=f"[Antiga pfp]({before.avatar_url})", color=0x00ff00)
 
             # Rodapé da embed com a hora que mudou
